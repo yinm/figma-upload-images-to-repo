@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "sync-images": "node --experimental-strip-types ./scripts/sync-images.ts",
+    "sync-images": "node --env-file=.env --experimental-strip-types ./scripts/sync-images.ts",
     "lint": "eslint ."
   },
   "devDependencies": {
