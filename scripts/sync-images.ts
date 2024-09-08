@@ -1,6 +1,8 @@
-import { mkdirSync, rmSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 
 const baseUrl = "https://api.figma.com/v1";
+/** TODO: Enable to specify command line argument */
+const format: "png" | "svg" = "png";
 
 /**
  * https://www.figma.com/developers/api#component-type
@@ -84,7 +86,7 @@ async function main() {
   const nodeIds = Object.keys(file.components);
 
   const imageUrls = await fetchImageUrls(
-    "png",
+    format,
     nodeIds,
     FIGMA_FILE_KEY,
     FIGMA_ACCESS_TOKEN
@@ -95,5 +97,14 @@ async function main() {
   const distDir = "./dist";
   rmSync(distDir, { force: true, recursive: true });
   mkdirSync(distDir);
+
+  for (const { name, url } of images) {
+    const response = await fetch(url);
+    const data =
+      format === "png"
+        ? Buffer.from(await response.arrayBuffer())
+        : await response.text();
+    writeFileSync(`${distDir}/${name}.${format}`, data);
+  }
 }
 main();
