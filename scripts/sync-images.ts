@@ -1,3 +1,5 @@
+import { mkdirSync, rmSync } from "node:fs";
+
 const baseUrl = "https://api.figma.com/v1";
 
 /**
@@ -89,5 +91,9 @@ async function main() {
   );
 
   const images = buildImages(nodeIds, file, imageUrls);
+
+  const distDir = "./dist";
+  rmSync(distDir, { force: true, recursive: true });
+  mkdirSync(distDir);
 }
 main();
