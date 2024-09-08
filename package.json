@@ -1,4 +1,8 @@
 {
+  "type": "module",
+  "scripts": {
+    "lint": "eslint ."
+  },
   "devDependencies": {
     "eslint": "^9.10.0",
     "eslint-config-yinm": "^0.0.3"
