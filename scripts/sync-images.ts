@@ -49,6 +49,29 @@ async function fetchImageUrls(
   return response.json();
 }
 
+function buildImages(
+  nodeIds: string[],
+  file: FigmaFile,
+  imageUrls: FigmaImages
+) {
+  return nodeIds.map((id) => {
+    // Require to change name for writing file
+    // - Remove `/` (because it's interpreted as directory)
+    // - Remove leading and trailing white spaces
+    const fileWritableName = file.components[id].name.split("/").at(-1)?.trim();
+    if (fileWritableName === undefined) {
+      throw new Error(
+        `Found unhandled component: "${id}: ${file.components[id].name}"`
+      );
+    }
+
+    return {
+      name: fileWritableName,
+      url: imageUrls.images[id],
+    };
+  });
+}
+
 async function main() {
   const { FIGMA_ACCESS_TOKEN, FIGMA_FILE_KEY } = process.env;
   if (!FIGMA_ACCESS_TOKEN || !FIGMA_FILE_KEY) {
@@ -64,5 +87,7 @@ async function main() {
     FIGMA_FILE_KEY,
     FIGMA_ACCESS_TOKEN
   );
+
+  const images = buildImages(nodeIds, file, imageUrls);
 }
 main();
