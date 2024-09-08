@@ -23,6 +23,32 @@ async function fetchFile(
   return response.json();
 }
 
+interface FigmaImages {
+  err: string;
+  images: Record<string, string>;
+}
+/**
+ * https://www.figma.com/developers/api#get-images-endpoint
+ */
+async function fetchImageUrls(
+  /** Only "svg" and "png" are required for our use case */
+  format: "svg" | "png",
+  nodeIds: string[],
+  fileKey: string,
+  accessToken: string
+): Promise<FigmaImages> {
+  const response = await fetch(
+    `${baseUrl}/images/${fileKey}?format=${format}&ids=${nodeIds.join(",")}`,
+    {
+      headers: {
+        "X-Figma-Token": accessToken,
+      },
+    }
+  );
+
+  return response.json();
+}
+
 async function main() {
   const { FIGMA_ACCESS_TOKEN, FIGMA_FILE_KEY } = process.env;
   if (!FIGMA_ACCESS_TOKEN || !FIGMA_FILE_KEY) {
@@ -30,5 +56,13 @@ async function main() {
   }
 
   const file = await fetchFile(FIGMA_FILE_KEY, FIGMA_ACCESS_TOKEN);
+  const nodeIds = Object.keys(file.components);
+
+  const imageUrls = await fetchImageUrls(
+    "png",
+    nodeIds,
+    FIGMA_FILE_KEY,
+    FIGMA_ACCESS_TOKEN
+  );
 }
 main();
