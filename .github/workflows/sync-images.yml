@@ -1,0 +1,38 @@
+name: sync images
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - sync-images
+
+jobs:
+  sync-images:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".tool-versions"
+
+      - name: create .env file
+        run: |
+          touch .env
+          echo "FIGMA_ACCESS_TOKEN=${{ secrets.FIGMA_ACCESS_TOKEN }}" > .env
+          echo "FIGMA_FILE_KEY=${{ secrets.FIGMA_FILE_KEY }}" > .env
+
+      - run: npm run sync-images
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@8867c4aba1b742c39f8d0ba35429c2dfa4b6cb20 # v7.0.1
+        with:
+          commit-message: Sync images
+          title: Sync images
+          body: This is an automated pull request to sync images.
+          branch: sync-images
