@@ -24,8 +24,8 @@ jobs:
       - name: create .env file
         run: |
           touch .env
-          echo "FIGMA_ACCESS_TOKEN=${{ secrets.FIGMA_ACCESS_TOKEN }}" > .env
-          echo "FIGMA_FILE_KEY=${{ secrets.FIGMA_FILE_KEY }}" > .env
+          echo "FIGMA_ACCESS_TOKEN=${{ secrets.FIGMA_ACCESS_TOKEN }}" >> .env
+          echo "FIGMA_FILE_KEY=${{ secrets.FIGMA_FILE_KEY }}" >> .env
 
       - run: npm run sync-images
 
